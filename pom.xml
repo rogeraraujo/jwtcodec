@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.rogeraraujo</groupId>
+  <artifactId>jwtcodec</artifactId>
+  <version>1.0</version>
+  <packaging>jar</packaging>
+
+  <name>JWT Codec</name>
+  <description>A GUI tool to encode/sign and decode/verify JSON Web Tokens</description>
+  <url>https://github.com/rogeraraujo/jwtcodec</url>
+
+  <developers>
+    <developer>
+      <name>Roger Araújo</name>
+      <email>roger.rf@gmail.com</email>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>8</maven.compiler.target>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <assertj-swing-junit.version>3.17.1</assertj-swing-junit.version>
+    <fusionauth-jwt.version>4.2.0</fusionauth-jwt.version>
+    <junit-jupiter.version>5.7.2</junit-jupiter.version>
+    <logback-classic.version>1.2.3</logback-classic.version>
+    <lombok.version>1.18.20</lombok.version>
+    <miglayout-swing.version>5.3</miglayout-swing.version>
+
+    <maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
+    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+    <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+  </properties>
+
+  <dependencies>
+    <!-- MigLayout layout manager -->
+    <dependency>
+      <groupId>com.miglayout</groupId>
+      <artifactId>miglayout-swing</artifactId>
+      <version>${miglayout-swing.version}</version>
+    </dependency>
+
+    <!-- Lombok annotations (@Getter, @Setter, @Slf4j and more) -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- SLF4j logging infrastructure -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback-classic.version}</version>
+    </dependency>
+
+    <!--
+    JSON Web Token encode/sign, decode/verify and random key generation
+    -->
+    <dependency>
+      <groupId>io.fusionauth</groupId>
+      <artifactId>fusionauth-jwt</artifactId>
+      <version>${fusionauth-jwt.version}</version>
+    </dependency>
+
+    <!-- JUnit testing infrastructure -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- JUnit-based testing infrastructure for Swing -->
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-swing-junit</artifactId>
+      <version>${assertj-swing-junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <!-- Generates jwtcodec.jar instead of jwtcodec-${pom.version}.jar -->
+    <finalName>jwtcodec</finalName>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+      </plugin>
+
+      <!-- Copies JAR dependencies to ./target/lib upon running mvn package -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>${maven-dependency-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+              <includeScope>compile</includeScope>
+              <!-- Exclude Lombok -->
+              <excludeGroupIds>org.projectlombok</excludeGroupIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Includes manifest in the output JAR file -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven-jar-plugin.version}</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>com.rogeraraujo.jwtcodec.Main</mainClass>
+              <!--
+              See <outputDirectory> in the <configuration> section of
+              maven-dependency-plugin above
+              -->
+              <classpathPrefix>lib/</classpathPrefix>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
